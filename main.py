@@ -4,20 +4,14 @@ from pymongo import MongoClient
 import config
 
 nScraper = NScraper(config.HEADERS)
-nScraper.compile_colleges(pages=6)
+nScraper.add_colleges(['Massachusetts Institute of Technology', 'Harvard University', 'Stanford University'])
+# nScraper.compile_colleges(pages=6)
 
-client = MongoClient("")
-
+client = MongoClient(config.CONNECT)
 my_database = client['niche_scraping']
 my_collection = my_database['college_db_test']
 
-
-def process(college):
-    nScraper.format_data(college)
-    my_collection.insert_one(college)
-
-
-nScraper.scrape(actions=list(PATHS.keys()), sync=True, thread=process)
+nScraper.scrape(actions=list(PATHS.keys()), sync=True, thread=my_collection.insert_one)
 college_data = nScraper.data
 
 for value in nScraper.data.values():
